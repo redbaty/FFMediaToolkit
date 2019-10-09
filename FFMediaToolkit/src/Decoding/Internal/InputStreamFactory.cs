@@ -39,7 +39,7 @@
 
             dict.Update(ptr);
 
-            return new InputStream<VideoFrame>(stream, container);
+            return new InputStream<VideoFrame>(stream, container, format->duration);
         }
     }
 }
