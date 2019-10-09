@@ -16,9 +16,13 @@
         /// Initializes a new instance of the <see cref="StreamInfo"/> class.
         /// </summary>
         /// <param name="stream">The video stram.</param>
-        /// <param name="duration">The video duration.</param>
-        internal unsafe StreamInfo(AVStream* stream, long duration)
+        /// <param name="container">The input container.</param>
+        internal unsafe StreamInfo(AVStream* stream, InputContainer container)
         {
+            Container = container;
+            var avChapter = container.Pointer->chapters[0];
+            var avDictionary = avChapter->metadata[0];
+
             var codec = stream->codec;
             Metadata = new ReadOnlyDictionary<string, string>(FFDictionary.ToDictionary(stream->metadata));
             CodecName = ffmpeg.avcodec_get_name(codec->codec_id);
@@ -30,7 +34,7 @@
             TimeBase = stream->time_base;
             RFrameRate = stream->r_frame_rate;
             FrameRate = RFrameRate.ToDouble();
-            Duration = TimeSpan.FromTicks(duration * 10);
+            Duration = TimeSpan.FromTicks(Container.Pointer->duration * 10);
             var start = stream->start_time.ToTimeSpan(stream->time_base);
             StartTime = start == TimeSpan.MinValue ? TimeSpan.Zero : start;
             FrameCount = Duration.ToFrameNumber(RFrameRate);

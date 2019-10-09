@@ -19,15 +19,14 @@
         /// </summary>
         /// <param name="stream">The multimedia stream.</param>
         /// <param name="owner">The container that owns the stream.</param>
-        /// <param name="duration">The file duration.</param>
-        public InputStream(AVStream* stream, InputContainer owner, long duration)
+        public InputStream(AVStream* stream, InputContainer owner)
             : base(stream)
         {
             OwnerFile = owner;
             PacketQueue = new ObservableQueue<MediaPacket>();
 
             Type = typeof(TFrame) == typeof(VideoFrame) ? MediaType.Video : MediaType.None;
-            Info = new StreamInfo(stream, duration);
+            Info = new StreamInfo(stream, owner);
         }
 
         /// <summary>
